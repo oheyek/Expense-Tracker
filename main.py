@@ -63,7 +63,7 @@ def add_expenses(args: argparse.Namespace) -> None:
     expenses = load_expenses()
     record_id = max((expense["ID"] for expense in expenses), default=0) + 1
     new_expense = {"ID": record_id, "Date": datetime.datetime.now().strftime("%Y-%m-%d"), "Description": description,
-        "Amount": f"$" + str(amount)}
+                   "Amount": f"$" + str(amount)}
     expenses.append(new_expense)
     save_expenses(expenses)
     print(f"Expense added successfully (ID: {record_id})")
@@ -74,10 +74,13 @@ def list_expenses() -> None:
     Function to read the existing expenses from json file and display it in proper format.
     """
     expenses = load_expenses()
-    print("ID\t\tDate\t\tDescription\t\tAmount")
-    for expense in range(len(expenses)):
-        print(str(expenses[expense]["ID"]) + "\t\t" + str(expenses[expense]["Date"]) + "\t\t" + str(
-            expenses[expense]["Description"]) + "\t\t" + str(expenses[expense]["Amount"]))
+    if not expenses:
+        print("There are no expenses yet.")
+    else:
+        print("ID\t\tDate\t\tDescription\t\tAmount")
+        for expense in range(len(expenses)):
+            print(str(expenses[expense]["ID"]) + "\t\t" + str(expenses[expense]["Date"]) + "\t\t" + str(
+                expenses[expense]["Description"]) + "\t\t" + str(expenses[expense]["Amount"]))
 
 
 def summarize_expenses(args):
@@ -87,10 +90,20 @@ def summarize_expenses(args):
     print("Summary operation working.")
 
 
-def delete_expense(args):
+def delete_expense(args: argparse.Namespace) -> str:
+    """
+    Function to delete expense with specific id.
+    :param args: Arguments provided by user.
+    :return: Message whether the expense has been deleted.
+    """
     expense_id = args.id
-    print(expense_id)
-    print("Delete operation working.")
+    expenses = load_expenses()
+    for expense in range(len(expenses)):
+        if expenses[expense]["ID"] == expense_id:
+            expenses.pop(expense)
+            save_expenses(expenses)
+            return "Expense deleted successfully."
+    return "There is no such expense with that id."
 
 
 def main() -> None:
@@ -108,7 +121,7 @@ def main() -> None:
         case "summary":
             summarize_expenses(args)
         case "delete":
-            delete_expense(args)
+            print(delete_expense(args))
         case _:
             raise ValueError("Invalid operation.")
 
