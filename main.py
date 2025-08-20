@@ -1,6 +1,6 @@
 import argparse
-import json
 import datetime
+import json
 from typing import List
 
 
@@ -31,6 +31,7 @@ def load_args() -> argparse.Namespace:
     args = parser.parse_args()
     return args
 
+
 def load_expenses() -> List:
     """
     Function to load expenses from a file.
@@ -42,7 +43,8 @@ def load_expenses() -> List:
     except FileNotFoundError:
         return []
 
-def save_expenses(expenses) -> None:
+
+def save_expenses(expenses: List) -> None:
     """
     Function to save expenses to a file.
     :param expenses: Task list to be saved.
@@ -51,25 +53,31 @@ def save_expenses(expenses) -> None:
         json.dump(expenses, file, indent=4)
 
 
-
-def add_expenses(args):
+def add_expenses(args: argparse.Namespace) -> None:
+    """
+    Function to add expenses to the json file.
+    :param args: Arguments for adding an expense.
+    """
     description = args.description
     amount = args.amount
     expenses = load_expenses()
     record_id = max((expense["ID"] for expense in expenses), default=0) + 1
-    new_expense = {
-        "ID": record_id,
-        "Date": datetime.datetime.now().strftime("%Y-%m-%d"),
-        "Description": description,
-        "Amount": f"$"+ str(amount)
-    }
+    new_expense = {"ID": record_id, "Date": datetime.datetime.now().strftime("%Y-%m-%d"), "Description": description,
+        "Amount": f"$" + str(amount)}
     expenses.append(new_expense)
     save_expenses(expenses)
     print(f"Expense added successfully (ID: {record_id})")
 
 
-def list_expenses():
-    print("List operation working.")
+def list_expenses() -> None:
+    """
+    Function to read the existing expenses from json file and display it in proper format.
+    """
+    expenses = load_expenses()
+    print("ID\t\tDate\t\tDescription\t\tAmount")
+    for expense in range(len(expenses)):
+        print(str(expenses[expense]["ID"]) + "\t\t" + str(expenses[expense]["Date"]) + "\t\t" + str(
+            expenses[expense]["Description"]) + "\t\t" + str(expenses[expense]["Amount"]))
 
 
 def summarize_expenses(args):
