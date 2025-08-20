@@ -1,4 +1,7 @@
 import argparse
+import json
+import datetime
+from typing import List
 
 
 def load_args() -> argparse.Namespace:
@@ -28,11 +31,41 @@ def load_args() -> argparse.Namespace:
     args = parser.parse_args()
     return args
 
+def load_expenses() -> List:
+    """
+    Function to load expenses from a file.
+    :return: List for a loaded expenses.
+    """
+    try:
+        with open("expenses.json", "r") as file:
+            return json.load(file)
+    except FileNotFoundError:
+        return []
+
+def save_expenses(expenses) -> None:
+    """
+    Function to save expenses to a file.
+    :param expenses: Task list to be saved.
+    """
+    with open("expenses.json", "w") as file:
+        json.dump(expenses, file, indent=4)
+
+
 
 def add_expenses(args):
     description = args.description
     amount = args.amount
-    print(description, amount)
+    expenses = load_expenses()
+    record_id = max((expense["ID"] for expense in expenses), default=0) + 1
+    new_expense = {
+        "ID": record_id,
+        "Date": datetime.datetime.now().strftime("%Y-%m-%d"),
+        "Description": description,
+        "Amount": f"$"+ str(amount)
+    }
+    expenses.append(new_expense)
+    save_expenses(expenses)
+    print(f"Expense added successfully (ID: {record_id})")
 
 
 def list_expenses():
