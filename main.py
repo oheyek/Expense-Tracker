@@ -1,32 +1,10 @@
 import argparse
 
 
-def add_expenses(args):
-    description = args.description
-    amount = args.amount
-    print(description, amount)
-
-
-def list_expenses():
-    print("List operation working.")
-
-
-def summarize_expenses(args):
-    if args.month:
-        month = args.month
-        print(month)
-    print("Summary operation working.")
-
-
-def delete_expense(args):
-    id = args.id
-    print(id)
-    print("Delete operation working.")
-
-
-def main() -> None:
+def load_args() -> argparse.Namespace:
     """
-    Main function of the program.
+    Function to load arguments provided by user from CLI.
+    :return: User's command arguments.
     """
     parser = argparse.ArgumentParser(description="Operation argument for expense tracker.")
     subparsers = parser.add_subparsers(dest="operation", required=True)
@@ -48,6 +26,37 @@ def main() -> None:
     delete_parser.add_argument("--id", type=int, required=True, help="Id of expense to be deleted.")
 
     args = parser.parse_args()
+    return args
+
+
+def add_expenses(args):
+    description = args.description
+    amount = args.amount
+    print(description, amount)
+
+
+def list_expenses():
+    print("List operation working.")
+
+
+def summarize_expenses(args):
+    if args.month:
+        month = args.month
+        print(month)
+    print("Summary operation working.")
+
+
+def delete_expense(args):
+    expense_id = args.id
+    print(expense_id)
+    print("Delete operation working.")
+
+
+def main() -> None:
+    """
+    Main function of the program.
+    """
+    args = load_args()
     operation = args.operation
 
     match operation:
