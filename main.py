@@ -61,7 +61,7 @@ def add_expenses(args: argparse.Namespace) -> None:
     description = args.description
     amount = args.amount
     expenses = load_expenses()
-    record_id = max((expense["ID"] for expense in expenses), default=0) + 1
+    record_id = max([expense["ID"] for expense in expenses] or [0]) + 1
     new_expense = {"ID": record_id, "Date": datetime.datetime.now().strftime("%Y-%m-%d"), "Description": description,
                    "Amount": f"$" + str(amount)}
     expenses.append(new_expense)
@@ -78,9 +78,9 @@ def list_expenses() -> None:
         print("There are no expenses yet.")
     else:
         print("ID\t\tDate\t\tDescription\t\tAmount")
-        for expense in range(len(expenses)):
-            print(str(expenses[expense]["ID"]) + "\t\t" + str(expenses[expense]["Date"]) + "\t\t" + str(
-                expenses[expense]["Description"]) + "\t\t" + str(expenses[expense]["Amount"]))
+        for expense in expenses:
+            print(str(expense["ID"]) + "\t\t" + str(expense["Date"]) + "\t\t" + str(
+                expense["Description"]) + "\t\t" + str(expense["Amount"]))
 
 
 def summarize_expenses(args):
@@ -98,9 +98,9 @@ def delete_expense(args: argparse.Namespace) -> str:
     """
     expense_id = args.id
     expenses = load_expenses()
-    for expense in range(len(expenses)):
-        if expenses[expense]["ID"] == expense_id:
-            expenses.pop(expense)
+    for index, expense in enumerate(expenses):
+        if expense["ID"] == expense_id:
+            expenses.pop(index)
             save_expenses(expenses)
             return "Expense deleted successfully."
     return "There is no such expense with that id."
