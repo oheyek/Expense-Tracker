@@ -6,15 +6,21 @@ def add_expenses(args):
     amount = args.amount
     print(description, amount)
 
+
 def list_expenses():
     print("List operation working.")
 
 
-def summarize_expenses():
+def summarize_expenses(args):
+    if args.month:
+        month = args.month
+        print(month)
     print("Summary operation working.")
 
 
-def delete_expense():
+def delete_expense(args):
+    id = args.id
+    print(id)
     print("Delete operation working.")
 
 
@@ -26,10 +32,20 @@ def main() -> None:
     subparsers = parser.add_subparsers(dest="operation", required=True)
 
     # Adding an expense
-    add_parser = subparsers.add_parser("add", help="Add a new expense")
-    add_parser.add_argument("--description", type=str, required=True, help="Description of the expense")
-    add_parser.add_argument("--amount", type=float, required=True, help="The amount of the expense")
+    add_parser = subparsers.add_parser("add", help="Add a new expense.")
+    add_parser.add_argument("--description", type=str, required=True, help="Description of the expense.")
+    add_parser.add_argument("--amount", type=float, required=True, help="The amount of the expense.")
 
+    # List expenses
+    subparsers.add_parser("list", help="List existing expenses.")
+
+    # Summarize expenses
+    summary_parser = subparsers.add_parser("summary", help="Summarize expenses.")
+    summary_parser.add_argument("--month", type=int, required=False, help="Summarize expenses at specific month.")
+
+    # Delete expense
+    delete_parser = subparsers.add_parser("delete", help="Delete expense.")
+    delete_parser.add_argument("--id", type=int, required=True, help="Id of expense to be deleted.")
 
     args = parser.parse_args()
     operation = args.operation
@@ -40,9 +56,9 @@ def main() -> None:
         case "list":
             list_expenses()
         case "summary":
-            summarize_expenses()
+            summarize_expenses(args)
         case "delete":
-            delete_expense()
+            delete_expense(args)
         case _:
             raise ValueError("Invalid operation.")
 
