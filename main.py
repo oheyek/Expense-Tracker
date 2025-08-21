@@ -1,6 +1,7 @@
 import argparse
 import datetime
 import json
+from datetime import datetime
 from typing import List
 
 
@@ -63,7 +64,7 @@ def add_expenses(args: argparse.Namespace) -> None:
     expenses = load_expenses()
     record_id = max([expense["ID"] for expense in expenses] or [0]) + 1
     new_expense = {"ID": record_id, "Date": datetime.datetime.now().strftime("%Y-%m-%d"), "Description": description,
-                   "Amount": f"$" + str(amount)}
+                   "Amount": str(amount)}
     expenses.append(new_expense)
     save_expenses(expenses)
     print(f"Expense added successfully (ID: {record_id})")
@@ -80,14 +81,35 @@ def list_expenses() -> None:
         print("ID\t\tDate\t\tDescription\t\tAmount")
         for expense in expenses:
             print(str(expense["ID"]) + "\t\t" + str(expense["Date"]) + "\t\t" + str(
-                expense["Description"]) + "\t\t" + str(expense["Amount"]))
+                expense["Description"]) + "\t\t" + f"$" + str(expense["Amount"]))
 
 
-def summarize_expenses(args):
-    if args.month:
-        month = args.month
-        print(month)
-    print("Summary operation working.")
+def summarize_expenses(args: argparse.Namespace) -> str:
+    """
+    Function to summarize expenses from a file.
+    :param args: Arguments for summarize operation.
+    :return: Summarized sum of expenses in a specific month if specified otherwise for all months.
+    """
+    expenses = load_expenses()
+    total_expenses = 0
+    if expenses:
+        if args.month:
+            month = args.month
+            for index, expense in enumerate(expenses):
+                expense_month = int(expense["Date"].split("-")[1])
+                if month == expense_month:
+                    total_expenses += float(expense["Amount"])
+                    date_str = expense["Date"]
+                    date_obj = datetime.strptime(date_str, "%Y-%m-%d")
+                    month_name = date_obj.strftime("%B")
+                    return f"Total expenses for {month_name}: ${total_expenses}"
+                else:
+                    return "There are no expenses with such a month yet."
+        for index, expense in enumerate(expenses):
+            total_expenses += float(expense["Amount"])
+            return f"Total expenses: ${total_expenses}"
+    else:
+        return "There are no expenses yet."
 
 
 def delete_expense(args: argparse.Namespace) -> str:
@@ -119,7 +141,7 @@ def main() -> None:
         case "list":
             list_expenses()
         case "summary":
-            summarize_expenses(args)
+            print(summarize_expenses(args))
         case "delete":
             print(delete_expense(args))
         case _:
