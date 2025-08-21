@@ -94,17 +94,17 @@ def summarize_expenses(args: argparse.Namespace) -> str:
     if expenses:
         if args.month:
             month = args.month
-            for index, expense in enumerate(expenses):
+            month_name = datetime.strptime(f"{month}", "%m").strftime("%B")
+            for expense in expenses:
                 expense_month = int(expense["Date"].split("-")[1])
                 if month == expense_month:
                     total_expenses += float(expense["Amount"])
-                    date_str = expense["Date"]
-                    date_obj = datetime.strptime(date_str, "%Y-%m-%d")
-                    month_name = date_obj.strftime("%B")
-                    return f"Total expenses for {month_name}: ${total_expenses}"
-                else:
-                    return "There are no expenses with such a month yet."
-        for index, expense in enumerate(expenses):
+
+            if total_expenses > 0:
+                return f"Total expenses for {month_name}: ${total_expenses}"
+            else:
+                return "There are no expenses with such a month yet."
+        for expense in expenses:
             total_expenses += float(expense["Amount"])
         return f"Total expenses: ${total_expenses}"
     else:
