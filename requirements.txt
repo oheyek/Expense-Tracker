@@ -1,0 +1,2 @@
+-e .
+setuptools==80.9.0
