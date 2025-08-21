@@ -1,5 +1,4 @@
 import argparse
-import datetime
 import json
 from datetime import datetime
 from typing import List
@@ -63,7 +62,7 @@ def add_expenses(args: argparse.Namespace) -> None:
     amount = args.amount
     expenses = load_expenses()
     record_id = max([expense["ID"] for expense in expenses] or [0]) + 1
-    new_expense = {"ID": record_id, "Date": datetime.datetime.now().strftime("%Y-%m-%d"), "Description": description,
+    new_expense = {"ID": record_id, "Date": datetime.now().strftime("%Y-%m-%d"), "Description": description,
                    "Amount": str(amount)}
     expenses.append(new_expense)
     save_expenses(expenses)
@@ -107,7 +106,7 @@ def summarize_expenses(args: argparse.Namespace) -> str:
                     return "There are no expenses with such a month yet."
         for index, expense in enumerate(expenses):
             total_expenses += float(expense["Amount"])
-            return f"Total expenses: ${total_expenses}"
+        return f"Total expenses: ${total_expenses}"
     else:
         return "There are no expenses yet."
 
